@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Estudiante - Menú Actualizado</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    
+    <style>
+        :root {
+            --bg-main: #f4f6f9;
+            --sidebar-bg: #1c232f; /* Ajustado al tono oscuro de las imágenes */
+            --sidebar-hover: #2c3643;
+            --sidebar-active: #4888ea; /* Tono azul de selección */
+            --text-dark: #333333;
+            --text-muted: #6c757d;
+            --border-color: #e3e6f0;
+            --success-color: #2e7d32;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- TOP BAR --- */
+        header {
+            background-color: #1a1e23; /* Tono barra superior */
+            height: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            border-bottom: 1px solid #111;
+            z-index: 10;
+            color: white;
+        }
+
+        .top-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        
+        .search-bar {
+            background-color: white;
+            border-radius: 4px;
+            padding: 4px 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .search-bar input {
+            border: none;
+            outline: none;
+            font-size: 0.85rem;
+            width: 150px;
+        }
+
+        .logo-center img {
+            height: 40px;
+            filter: brightness(0.1); 
+        }
+
+        .top-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .notification-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: #ccc;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -8px;
+            background-color: #fd7e14;
+            color: white;
+            font-size: 0.65rem;
+            padding: 2px 5px;
+            border-radius: 50%;
+            font-weight: bold;
+        }
+
+        /* --- MAIN CONTAINER --- */
+        .wrapper {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* --- SIDEBAR --- */
+        aside {
+            width: 260px;
+            background-color: var(--sidebar-bg);
+            color: #ecf0f1;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        aside::-webkit-scrollbar { width: 6px; }
+        aside::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+        aside::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+
+        .profile-card {
+            padding: 25px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            background-color: #171b22;
+        }
+
+        .profile-img-container {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #cde1f8;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .profile-img-container i {
+            font-size: 4rem;
+            color: #8bb4e7;
+            margin-top: 20px;
+        }
+
+        .profile-name {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: white;
+        }
+
+        .profile-info {
+            font-size: 0.75rem;
+            color: #a0aec0;
+            margin-bottom: 3px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .menu-item > a, .has-sub-submenu > a {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .menu-item > a i:first-child, .has-sub-submenu > a i:first-child {
+            width: 25px;
+            font-size: 1rem;
+            margin-right: 10px;
+            text-align: center;
+        }
+
+        .menu-item.active-main > a {
+            background-color: var(--sidebar-active);
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        .menu-item > a:hover {
+            background-color: var(--sidebar-hover);
+        }
+
+        .arrow-icon {
+            margin-left: auto;
+            font-size: 0.70rem;
+        }
+
+        /* --- SUBMENUS --- */
+        .submenu {
+            display: none;
+            list-style: none;
+            background-color: #1a202c; /* Ligeramente más oscuro */
+            padding: 0;
+        }
+
+        .submenu li {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+        }
+
+        .submenu > li > a {
+            padding: 12px 20px 12px 45px;
+            display: flex;
+            align-items: center;
+            color: #a0aec0;
+            text-decoration: none;
+            font-size: 0.85rem;
+        }
+
+        .submenu > li > a i:first-child {
+            width: 20px;
+            margin-right: 8px;
+            font-size: 0.9rem;
+        }
+
+        .submenu li a:hover {
+            color: #ffffff;
+            background-color: var(--sidebar-hover);
+        }
+
+        /* --- SUB-SUBMENUS --- */
+        .sub-submenu {
+            display: none;
+            list-style: none;
+            background-color: #141821;
+            padding: 0;
+        }
+
+        .sub-submenu li a {
+            padding: 12px 20px 12px 65px;
+            color: #a0aec0;
+            text-decoration: none;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .sub-submenu li a i:first-child {
+            width: 20px;
+            margin-right: 8px;
+        }
+
+        .active-sub > a {
+            background-color: var(--sidebar-active) !important;
+            color: #ffffff !important;
+            font-weight: 500;
+        }
+
+        /* --- CONTENT AREA --- */
+        main {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+        }
+
+        .content-view {
+            padding: 20px 30px;
+            flex: 1;
+        }
+
+        /* Estilos vista en blanco */
+        .blank-header {
+            background-color: #f8f9fa;
+            padding: 12px 20px;
+            font-size: 0.85rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .blank-title {
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-bottom: 1px solid var(--border-color);
+            background-color: #f8f9fa;
+        }
+
+        .blank-content {
+            padding: 20px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .box-container {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 10px;
+            background-color: #fff;
+        }
+        
+        /* RESTO DE ESTILOS DEL HISTORIAL (Igual que antes) */
+        .breadcrumbs { font-size: 0.75rem; color: var(--sidebar-active); margin-bottom: 15px; }
+        .breadcrumbs span { color: var(--text-muted); }
+        .section-title { font-size: 1.1rem; font-weight: 600; display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+        .program-selector { background-color: #ffffff; padding: 15px 20px; border-radius: 6px; border: 1px solid var(--border-color); margin-bottom: 25px; }
+        .program-selector label { display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; margin-bottom: 6px; color: var(--text-muted); }
+        .program-selector select { width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.85rem; color: var(--text-dark); }
+        .period-block { background-color: #ffffff; border-radius: 6px; border: 1px solid var(--border-color); margin-bottom: 25px; overflow: hidden; }
+        .period-header { background-color: #ffffff; padding: 15px 20px; border-bottom: 1px solid var(--border-color); font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 10px; color: #2c3e50; }
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.8rem; }
+        th { background-color: #ffffff; color: #4e73df; font-weight: 600; padding: 12px 15px; border-bottom: 2px solid var(--border-color); }
+        td { padding: 12px 15px; border-bottom: 1px solid var(--border-color); color: #5a5c69; }
+        tr:hover { background-color: #f8f9fc; }
+        .grade-positive { color: var(--success-color); font-weight: 600; }
+        .metrics-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; padding: 15px 20px; background-color: #ffffff; border-top: 1px solid var(--border-color); }
+        .metric-card { border: 1px solid var(--border-color); border-radius: 6px; padding: 12px 15px; display: flex; align-items: center; justify-content: space-between; }
+        .metric-value { font-size: 1.3rem; font-weight: 700; color: #333; }
+        .metric-label { font-size: 0.65rem; font-weight: 600; color: #4e73df; text-transform: uppercase; text-align: right; max-width: 100px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="top-left">
+            <i class="fa-solid fa-bars"></i>
+            <div class="search-bar">
+                <i class="fa-solid fa-magnifying-glass" style="color: #999; font-size: 0.8rem;"></i>
+                <input type="text" placeholder="Buscar">
+            </div>
+        </div>
+        <div class="top-right">
+            <div class="notification-icon">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span class="notification-badge">0</span>
+            </div>
+            <div class="notification-icon">
+                <i class="fa-solid fa-satellite-dish"></i>
+            </div>
+            <div class="notification-icon">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="wrapper">
+        <aside>
+            <div class="profile-card">
+                <div class="profile-img-container">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <div class="profile-name">Sebastian Tapias Carrillo</div>
+                <div class="profile-info">CC: 1027660348</div>
+                <div class="profile-info"><i class="fa-solid fa-phone" style="font-size: 0.6rem;"></i></div>
+                <div class="profile-info"><i class="fa-solid fa-envelope" style="font-size: 0.6rem;"></i> sebastiantapias456@gmail.com</div>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li class="menu-item active-main">
+                    <a href="#" onclick="showBlank('Inicio', 'Inicio', this)"><i class="fa-solid fa-house"></i> Inicio <i class="fa-solid fa-chevron-down arrow-icon" style="opacity:0;"></i></a>
+                </li>
+                
+                <!-- MI INFORMACIÓN -->
+                <li class="menu-item has-submenu">
+                    <a href="#"><i class="fa-solid fa-user"></i> Mi información <i class="fa-solid fa-chevron-down arrow-icon"></i></a>
+                    <ul class="submenu">
+                        <li class="has-sub-submenu">
+                            <a href="#"><i class="fa-solid fa-address-card"></i> Mi perfil <i class="fa-solid fa-chevron-down arrow-icon"></i></a>
+                            <ul class="sub-submenu">
+                                <li><a href="#" onclick="showBlank('Mi información > Mi perfil > Hoja de vida', 'Hoja de vida', this)"><i class="fa-solid fa-file-lines"></i> Hoja de vida</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#" onclick="showBlank('Mi información > Agenda Estudiante', 'Horario', this)"><i class="fa-regular fa-calendar"></i> Agenda Estudiante</a></li>
+                        <li><a href="#" onclick="showBlank('Mi información > Agenda Docente', 'Horario de los grupos que dicta para el semestre', this)"><i class="fa-regular fa-calendar-check"></i> Agenda Docente</a></li>
+                    </ul>
+                </li>
+
+                <!-- GESTIÓN -->
+                <li class="menu-item has-submenu">
+                    <a href="#"><i class="fa-solid fa-folder"></i> Gestión <i class="fa-solid fa-chevron-down arrow-icon"></i></a>
+                    <ul class="submenu">
+                        <li class="has-sub-submenu">
+                            <a href="#"><i class="fa-solid fa-briefcase"></i> Prácticas laborales <i class="fa-solid fa-chevron-down arrow-icon"></i></a>
+                            <ul class="sub-submenu">
+                                <li><a href="#" onclick="showBlank('Gestión > Prácticas laborales', 'Prácticas laborales', this)"><i class="fa-solid fa-briefcase"></i> Prácticas laborales</a></li>
+                            </ul>
+                        </li>
+                        <li class="has-sub-submenu">
+                            <a href="#"><i class="fa-solid fa-globe"></i> Internacionalización <i class="fa-solid fa-chevron-down arrow-icon"></i></a>
+                            <ul class="sub-submenu">
+                                <li><a href="#" onclick="showBlank('Gestión > Internacionalización > Mis actividades', 'Mis actividades', this)"><i class="fa-solid fa-earth-americas"></i> Mis actividades</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#" onclick="showBlank('Gestión > Evaluaciones > Estudiante', 'Evaluaciones Pendientes', this)"><i class="fa-solid fa-pen"></i> Evaluaciones</a></li>
+                    </ul>
+                </li>
+
+                <!-- ACADÉMICO -->
+                <li class="menu-item has-submenu">
+                    <a href="#"><i class="fa-solid fa-building-columns"></i> Académico <i class="fa-solid fa-chevron-down arrow-icon"></i></a>
+                    <ul class="submenu">
+                        <li><a href="#" onclick="showBlank('Académico > Currículo', 'Currículo', this)"><i class="fa-solid fa-user"></i> Currículo</a></li>
+                        <li class="has-sub-submenu">
+                            <a href="#"><i class="fa-solid fa-arrow-down-short-wide"></i> Historial <i class="fa-solid fa-chevron-down arrow-icon"></i></a>
+                            <ul class="sub-submenu">
+                                <li><a href="#" onclick="showHistorial(this)"><i class="fa-solid fa-list"></i> Estudiante</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#" onclick="showBlank('Académico > Contenidos', 'Contenidos', this)"><i class="fa-solid fa-table-list"></i> Contenidos</a></li>
+                        <li class="has-sub-submenu">
+                            <a href="#"><i class="fa-solid fa-circle-check"></i> Calificaciones <i class="fa-solid fa-chevron-down arrow-icon"></i></a>
+                            <ul class="sub-submenu">
+                                <li><a href="#" onclick="showBlank('Académico > Calificaciones > Estudiante', 'Calificaciones', this)"><i class="fa-solid fa-user-graduate"></i> Estudiante</a></li>
+                            </ul>
+                        </li>
+                        <li class="has-sub-submenu">
+                            <a href="#"><i class="fa-solid fa-right-to-bracket"></i> Matriculas <i class="fa-solid fa-chevron-down arrow-icon"></i></a>
+                            <ul class="sub-submenu">
+                                <li><a href="#" onclick="showBlank('Académico > Matriculas > Estudiante', 'Lista de Matrículas en horario activo para ser editadas', this)"><i class="fa-solid fa-right-to-bracket"></i> Estudiante</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- SERVICIOS -->
+                <li class="menu-item has-submenu">
+                    <a href="#"><i class="fa-regular fa-comment-dots"></i> Servicios <i class="fa-solid fa-chevron-down arrow-icon"></i></a>
+                    <ul class="submenu">
+                        <li><a href="#" onclick="showBlank('Servicios > Atención', 'Atención', this)"><i class="fa-regular fa-comment-dots"></i> Atención</a></li>
+                        <li><a href="#" onclick="showBlank('Servicios > Bienestar', 'Bienestar', this)"><i class="fa-solid fa-seedling"></i> Bienestar</a></li>
+                        <li><a href="#" onclick="showBlank('Servicios > Financiero', 'Financiero', this)"><i class="fa-solid fa-money-bill-1"></i> Financiero</a></li>
+                        <li><a href="#" onclick="showBlank('Servicios > Internacionalización', 'Internacionalización', this)"><i class="fa-solid fa-globe"></i> Internacionalización</a></li>
+                        <li><a href="#" onclick="showBlank('Servicios > Bivi', 'Bivi', this)"><i class="fa-solid fa-book"></i> Bivi</a></li>
+                        <li><a href="#" onclick="showBlank('Servicios > Solicitud Convenio', 'Solicitud Convenio', this)"><i class="fa-solid fa-handshake"></i> Solicitud Convenio</a></li>
+                        <li><a href="#" onclick="showBlank('Servicios > Ofertas Laborales', 'Ofertas Laborales', this)"><i class="fa-solid fa-folder-open"></i> Ofertas Laborales</a></li>
+                        <li><a href="#" onclick="showBlank('Servicios > Solicitud grado', 'Solicitud grado', this)"><i class="fa-solid fa-graduation-cap"></i> Solicitud grado</a></li>
+                        <li><a href="#" onclick="showBlank('Servicios > Solicitudes de Descuento Electoral', 'Solicitudes de Descuento Electoral', this)"><i class="fa-solid fa-id-card"></i> Solicitudes de Descuento Electoral</a></li>
+                        <li><a href="#" onclick="showBlank('Servicios > Préstamo de artículos', 'Préstamo de artículos', this)"><i class="fa-solid fa-camera"></i> Préstamo de artículos</a></li>
+                        <li><a href="#" onclick="showBlank('Servicios > Reserva de Espacios', 'Reserva de Espacios', this)"><i class="fa-solid fa-sliders"></i> Reserva de Espacios</a></li>
+                    </ul>
+                </li>
+
+                <!-- LMS -->
+                <li class="menu-item has-submenu">
+                    <a href="#"><i class="fa-solid fa-table-cells-large"></i> LMS <i class="fa-solid fa-chevron-down arrow-icon"></i></a>
+                    <ul class="submenu">
+                        <li><a href="#" onclick="showBlank('LMS > Moodle', 'Plataforma LMS', this)"><i class="fa-solid fa-desktop"></i> Plataforma</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </aside>
+
+        <main id="main-container">
+            
+            <!-- VISTA: EN BLANCO / DINÁMICA -->
+            <div id="view-blank" style="display: flex; flex-direction: column; height: 100%;">
+                <div class="blank-header" id="dynamic-breadcrumb">
+                    Inicio
+                </div>
+                <div class="blank-title" id="dynamic-title">
+                    <i class="fa-solid fa-briefcase"></i> Título de la sección
+                </div>
+                <div class="blank-content">
+                    <div class="box-container">
+                        Ninguna fila encontrada
+                    </div>
+                </div>
+            </div>
+
+            <!-- VISTA: HISTORIAL ACADÉMICO (Se mantiene intacto según tu última solicitud) -->
+            <div id="view-historial" class="content-view" style="display: none;">
+                <div class="breadcrumbs">
+                    Académico &gt; Historial &gt; <span>Estudiante</span>
+                </div>
+
+                <div class="section-title">
+                    <i class="fa-regular fa-file-lines" style="color: var(--text-muted);"></i> Historial
+                </div>
+
+                <div class="program-selector">
+                    <label>Programa</label>
+                    <select>
+                        <option>TECNOLOGÍA EN GESTIÓN DE LA CIBERSEGURIDAD</option>
+                    </select>
+                </div>
+
+                <!-- PERIODO 2026-1 -->
+                <div class="period-block">
+                    <div class="period-header">
+                        <i class="fa-solid fa-gear" style="color: #4e73df;"></i> TECNOLOGÍA EN GESTIÓN DE LA CIBERSEGURIDAD [2026-1]
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nro. Nivel</th>
+                                    <th>Asignatura</th>
+                                    <th>Código Institucional</th>
+                                    <th>Estado</th>
+                                    <th>Nro. Créditos</th>
+                                    <th># Horas</th>
+                                    <th>Nota Definitiva</th>
+                                    <th>Nota Acumulada</th>
+                                    <th>Faltas Asistencia</th>
+                                    <th>% Faltas</th>
+                                    <th>Cancelar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>3</td>
+                                    <td>Seguridad en redes de datos</td>
+                                    <td>PREFIINKG24015</td>
+                                    <td>Aprobada</td>
+                                    <td>3</td>
+                                    <td>4</td>
+                                    <td class="grade-positive">4.6</td>
+                                    <td class="grade-positive">4.6</td>
+                                    <td>0/64 Horas</td>
+                                    <td>0.0</td>
+                                    <td style="text-align:center;">--</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>Cálculo Integral</td>
+                                    <td>PREFIINGI15108</td>
+                                    <td>Aprobada</td>
+                                    <td>3</td>
+                                    <td>4</td>
+                                    <td class="grade-positive">3.6</td>
+                                    <td class="grade-positive">3.6</td>
+                                    <td>3/64 Horas</td>
+                                    <td>4.7</td>
+                                    <td style="text-align:center;">--</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>Construcción de Software II</td>
+                                    <td>PRESIHXC24015</td>
+                                    <td>Aprobada</td>
+                                    <td>3</td>
+                                    <td>4</td>
+                                    <td class="grade-positive">4.8</td>
+                                    <td class="grade-positive">4.8</td>
+                                    <td>0/64 Horas</td>
+                                    <td>0.0</td>
+                                    <td style="text-align:center;">--</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>Configuración segura de base de datos</td>
+                                    <td>PRESIHNG15007</td>
+                                    <td>Aprobada</td>
+                                    <td>2</td>
+                                    <td>4</td>
+                                    <td class="grade-positive">4.1</td>
+                                    <td class="grade-positive">4.1</td>
+                                    <td>0/64 Horas</td>
+                                    <td>0.0</td>
+                                    <td style="text-align:center;">--</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>Telemática</td>
+                                    <td>PRESBAC016017</td>
+                                    <td>Aprobada</td>
+                                    <td>2</td>
+                                    <td>4</td>
+                                    <td class="grade-positive">4.1</td>
+                                    <td class="grade-positive">4.1</td>
+                                    <td>2/64 Horas</td>
+                                    <td>3.1</td>
+                                    <td style="text-align:center;">--</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>Inglés III</td>
+                                    <td>PRESBAC015005</td>
+                                    <td>Aprobada</td>
+                                    <td>2</td>
+                                    <td>4</td>
+                                    <td class="grade-positive">5.0</td>
+                                    <td class="grade-positive">5.0</td>
+                                    <td>0/64 Horas</td>
+                                    <td>0.0</td>
+                                    <td style="text-align:center;">--</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="metrics-container">
+                        <div class="metric-card">
+                            <span class="metric-value">15</span>
+                            <span class="metric-label">Total Créditos</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-value">24</span>
+                            <span class="metric-label">Total Horas</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-value">5</span>
+                            <span class="metric-label">Total Faltas</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-value">4.1</span>
+                            <span class="metric-label">Nota Promed At</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PERIODO 2025-2 -->
+                <div class="period-block">
+                    <div class="period-header">
+                        <i class="fa-solid fa-gear" style="color: #4e73df;"></i> TECNOLOGÍA EN GESTIÓN DE LA CIBERSEGURIDAD [2025-2]
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nro. Nivel</th>
+                                    <th>Asignatura</th>
+                                    <th>Código Institucional</th>
+                                    <th>Estado</th>
+                                    <th>Nro. Créditos</th>
+                                    <th># Horas</th>
+                                    <th>Nota Definitiva</th>
+                                    <th>Nota Acumulada</th>
+                                    <th>Faltas Asistencia</th>
+                                    <th>% Faltas</th>
+                                    <th>Cancelar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>2</td>
+                                    <td>Cálculo Diferencial</td>
+                                    <td>PRESMKQ06085</td>
+                                    <td>Aprobada</td>
+                                    <td>3</td>
+                                    <td>4</td>
+                                    <td class="grade-positive">3.4</td>
+                                    <td class="grade-positive">3.4</td>
+                                    <td>0.0/48.0 Horas</td>
+                                    <td>0.0</td>
+                                    <td style="text-align:center;">--</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>Amenazas e incidentes de ciberseguridad</td>
+                                    <td>PRESINFO24019</td>
+                                    <td>Aprobada</td>
+                                    <td>3</td>
+                                    <td>4</td>
+                                    <td class="grade-positive">4.2</td>
+                                    <td class="grade-positive">4.2</td>
+                                    <td>0.0/48.0 Horas</td>
+                                    <td>0.0</td>
+                                    <td style="text-align:center;">--</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>Inglés II</td>
+                                    <td>PRESIMIG15016</td>
+                                    <td>Aprobada</td>
+                                    <td>3</td>
+                                    <td>4</td>
+                                    <td class="grade-positive">4.9</td>
+                                    <td class="grade-positive">4.9</td>
+                                    <td>0.0/64.0 Horas</td>
+                                    <td>0.0</td>
+                                    <td style="text-align:center;">--</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>Redes de datos</td>
+                                    <td>PRESIMIG15129</td>
+                                    <td>Aprobada</td>
+                                    <td>3</td>
+                                    <td>4</td>
+                                    <td class="grade-positive">4.1</td>
+                                    <td class="grade-positive">4.1</td>
+                                    <td>0.0/64.0 Horas</td>
+                                    <td>0.0</td>
+                                    <td style="text-align:center;">--</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="metrics-container">
+                        <div class="metric-card">
+                            <span class="metric-value">12</span>
+                            <span class="metric-label">Total Créditos</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-value">16</span>
+                            <span class="metric-label">Total Horas</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-value">0</span>
+                            <span class="metric-label">Total Faltas</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-value">3.9</span>
+                            <span class="metric-label">Nota Promed At</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PERIODO 2025-1 -->
+                <div class="period-block">
+                    <div class="period-header">
+                        <i class="fa-solid fa-gear" style="color: #4e73df;"></i> TECNOLOGÍA EN GESTIÓN DE LA CIBERSEGURIDAD [2025-1]
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nro. Nivel</th>
+                                    <th>Asignatura</th>
+                                    <th>Código Institucional</th>
+                                    <th>Estado</th>
+                                    <th>Nro. Créditos</th>
+                                    <th># Horas</th>
+                                    <th>Nota Definitiva</th>
+                                    <th>Nota Acumulada</th>
+                                    <th>Faltas Asistencia</th>
+                                    <th>% Faltas</th>
+                                    <th>Cancelar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>Arquitectura de hardware</td>
+                                    <td>PREININFO24015</td>
+                                    <td>Aprobada</td>
+                                    <td>3</td>
+                                    <td>4</td>
+                                    <td class="grade-positive">4.6</td>
+                                    <td class="grade-positive">4.6</td>
+                                    <td>0.0/64.0 Horas</td>
+                                    <td>0.0</td>
+                                    <td style="text-align:center;">--</td>
+                                </tr>
+                                <tr>
+                                    <td>1</td>
+                                    <td>Desarrollar habilidades comunicativas</td>
+                                    <td>PRESIMIG15108</td>
+                                    <td>Aprobada</td>
+                                    <td>2</td>
+                                    <td>4</td>
+                                    <td class="grade-positive">5.0</td>
+                                    <td class="grade-positive">5.0</td>
+                                    <td>0/64 Horas</td>
+                                    <td>0.0</td>
+                                    <td style="text-align:center;">--</td>
+                                </tr>
+                                <tr>
+                                    <td>1</td>
+                                    <td>Fundamentos de programación</td>
+                                    <td>PREININFO24016</td>
+                                    <td>Aprobada</td>
+                                    <td>3</td>
+                                    <td>4</td>
+                                    <td class="grade-positive">4.8</td>
+                                    <td class="grade-positive">4.8</td>
+                                    <td>0.0/64.0 Horas</td>
+                                    <td>0.0</td>
+                                    <td style="text-align:center;">--</td>
+                                </tr>
+                                <tr>
+                                    <td>1</td>
+                                    <td>Ingles I</td>
+                                    <td>PRESBMIG15007</td>
+                                    <td>Aprobada</td>
+                                    <td>2</td>
+                                    <td>4</td>
+                                    <td class="grade-positive">4.0</td>
+                                    <td class="grade-positive">4.0</td>
+                                    <td>0/64 Horas</td>
+                                    <td>0.0</td>
+                                    <td style="text-align:center;">--</td>
+                                </tr>
+                                <tr>
+                                    <td>1</td>
+                                    <td>Introducción a la ciberseguridad</td>
+                                    <td>PREININFO24017</td>
+                                    <td>Aprobada</td>
+                                    <td>3</td>
+                                    <td>4</td>
+                                    <td class="grade-positive">4.1</td>
+                                    <td class="grade-positive">4.1</td>
+                                    <td>0/64 Horas</td>
+                                    <td>0.0</td>
+                                    <td style="text-align:center;">--</td>
+                                </tr>
+                                <tr>
+                                    <td>1</td>
+                                    <td>Matemáticas operativas</td>
+                                    <td>PRESBACO16005</td>
+                                    <td>Aprobada</td>
+                                    <td>3</td>
+                                    <td>4</td>
+                                    <td class="grade-positive">4.1</td>
+                                    <td class="grade-positive">4.1</td>
+                                    <td>0/64 Horas</td>
+                                    <td>0.0</td>
+                                    <td style="text-align:center;">--</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="metrics-container">
+                        <div class="metric-card">
+                            <span class="metric-value">16</span>
+                            <span class="metric-label">Total Créditos</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-value">24</span>
+                            <span class="metric-label">Total Horas</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-value">0</span>
+                            <span class="metric-label">Total Faltas</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-value">4.1</span>
+                            <span class="metric-label">Nota Promedio</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+
+    <!-- SCRIPT PARA INTERACTIVIDAD -->
+<script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // --- NUEVA FUNCIÓN: Toggle Sidebar ---
+            const sidebar = document.querySelector('aside');
+            const toggleBtn = document.querySelector('.fa-bars');
+
+            if (toggleBtn) {
+                toggleBtn.style.cursor = 'pointer'; // Para indicar que es clickeable
+                toggleBtn.addEventListener('click', function() {
+                    if (sidebar.style.display === 'none') {
+                        sidebar.style.display = 'flex';
+                    } else {
+                        sidebar.style.display = 'none';
+                    }
+                });
+            }
+
+            // Manejar expansión de menús
+            const menuToggles = document.querySelectorAll('.has-submenu > a, .has-sub-submenu > a');
+            
+            menuToggles.forEach(toggle => {
+                toggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const parentLi = this.parentElement;
+                    const submenu = parentLi.querySelector(':scope > .submenu, :scope > .sub-submenu');
+                    const icon = this.querySelector('.arrow-icon');
+                    
+                    if (submenu) {
+                        const isExpanded = submenu.style.display === 'block';
+                        submenu.style.display = isExpanded ? 'none' : 'block';
+                        if(icon) {
+                            icon.classList.toggle('fa-chevron-up', !isExpanded);
+                            icon.classList.toggle('fa-chevron-down', isExpanded);
+                        }
+                    }
+                });
+            });
+            
+            // Iniciar en la vista en blanco por defecto
+            document.getElementById('dynamic-title').innerHTML = '<i class="fa-solid fa-house"></i> Inicio';
+        });
+
+        // Funciones auxiliares de navegación (se mantienen igual)
+        function showHistorial(element) {
+            document.getElementById('view-historial').style.display = 'block';
+            document.getElementById('view-blank').style.display = 'none';
+            resetActiveMenus();
+            if(element) {
+                element.parentElement.classList.add('active-sub');
+                const mainLi = element.closest('.menu-item');
+                if(mainLi) mainLi.classList.add('active-main');
+            }
+        }
+
+        function showBlank(breadcrumbText, titleText, element) {
+            document.getElementById('view-historial').style.display = 'none';
+            document.getElementById('view-blank').style.display = 'flex';
+            document.getElementById('dynamic-breadcrumb').innerText = breadcrumbText || 'Inicio';
+            let iconHtml = element ? (element.querySelector('i:first-child')?.outerHTML || '') + ' ' : '';
+            document.getElementById('dynamic-title').innerHTML = iconHtml + (titleText || 'Sección');
+            resetActiveMenus();
+            if(element) {
+                const mainLi = element.closest('.menu-item');
+                if(mainLi) mainLi.classList.add('active-main');
+                element.parentElement.classList.add('active-sub');
+            }
+        }
+
+        function resetActiveMenus() {
+            document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active-main'));
+            document.querySelectorAll('.sub-submenu li, .submenu > li').forEach(el => el.classList.remove('active-sub'));
+        }
+    </script>
+</body>
+</html>
